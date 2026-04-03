@@ -1,4 +1,4 @@
-name: CI Pipeline
+п»їname: CI Pipeline
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize, review_requested]
@@ -27,19 +27,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Перевірка наявності схваленого код-рев'ю
+      - name: РџРµСЂРµРІС–СЂРєР° РЅР°СЏРІРЅРѕСЃС‚С– СЃС…РІР°Р»РµРЅРѕРіРѕ РєРѕРґ-СЂРµРІ'СЋ
         uses: actions/github-script@v6
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
-            const {data: reviews} = await github.pulls.listReviews({
+            const {data: reviews} = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber
             });
             const approved = reviews.some(review => review.state === 'APPROVED');
             if (!approved) {
-              core.setFailed("Код-рев'ю не схвалено");
+              core.setFailed("РљРѕРґ-СЂРµРІ'СЋ РЅРµ СЃС…РІР°Р»РµРЅРѕ");
             }
 
       - name: Count lines of code with Cloc
@@ -57,14 +57,14 @@ jobs:
           export PATH=$PATH:$(pwd)/sonar-scanner-4.8.0.2856-linux/bin
           sonar-scanner
 
-      - name: Запуск flake8 через Reviewdog
+      - name: Р—Р°РїСѓСЃРє flake8 С‡РµСЂРµР· Reviewdog
         uses: reviewdog/action-flake8@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error
 
-      - name: Запуск Black через Reviewdog
+      - name: Р—Р°РїСѓСЃРє Black С‡РµСЂРµР· Reviewdog
         uses: reviewdog/action-black@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
